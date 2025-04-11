@@ -23,7 +23,7 @@ const uploadFileToDrive = async (file) => {
 
     const fileMetadata = {
         name: file.originalname,
-        parents: ['ID_DE_TU_CARPETA'],
+        parents: ['https://drive.google.com/drive/folders/1-35sznqeDd-35dP8Okz-3Ng2vSnxKx-n?usp=drive_link'],
     };
 
     const media = {

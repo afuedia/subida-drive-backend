@@ -1,8 +1,8 @@
 const { google } = require('googleapis');
-const fs = require('fs');
-const path = require('path');
 const multer = require('multer');
-const { googleCredentials } = process.env;
+
+// Cargar credenciales desde variable de entorno
+const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
 
 // Configurar almacenamiento temporal
 const storage = multer.memoryStorage();
@@ -14,7 +14,7 @@ const drive = google.drive('v3');
 // Función para subir archivo a Google Drive
 const uploadFileToDrive = async (file) => {
     const auth = new google.auth.GoogleAuth({
-        credentials: JSON.parse(googleCredentials),
+        credentials: credentials,
         scopes: ['https://www.googleapis.com/auth/drive.file'],
     });
 
@@ -23,7 +23,7 @@ const uploadFileToDrive = async (file) => {
 
     const fileMetadata = {
         name: file.originalname,
-        parents: ['https://drive.google.com/drive/folders/1-35sznqeDd-35dP8Okz-3Ng2vSnxKx-n?usp=drive_link'],
+        parents: ['1-35sznqeDd-35dP8Okz-3Ng2vSnxKx-n'], // SOLO el ID de la carpeta
     };
 
     const media = {
@@ -58,3 +58,4 @@ module.exports = (req, res) => {
         }
     });
 };
+

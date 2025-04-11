@@ -2,10 +2,11 @@ const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const { googleCredentials } = process.env;
 
 // Configurar almacenamiento temporal
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).single('file');  // 'file' es el nombre del campo de archivo en tu formulario
+const upload = multer({ storage: storage }).single('file');
 
 // Crear servicio de Google Drive
 const drive = google.drive('v3');
@@ -13,7 +14,7 @@ const drive = google.drive('v3');
 // Función para subir archivo a Google Drive
 const uploadFileToDrive = async (file) => {
     const auth = new google.auth.GoogleAuth({
-        keyFile: path.join(__dirname, '../config/google-credentials.json'),
+        credentials: JSON.parse(googleCredentials),
         scopes: ['https://www.googleapis.com/auth/drive.file'],
     });
 
@@ -21,8 +22,8 @@ const uploadFileToDrive = async (file) => {
     google.options({ auth: authClient });
 
     const fileMetadata = {
-        name: file.originalname, // Nombre del archivo
-        parents: ['ID_DE_TU_CARPETA'], // Aquí pon el ID de tu carpeta de Google Drive
+        name: file.originalname,
+        parents: ['ID_DE_TU_CARPETA'],
     };
 
     const media = {

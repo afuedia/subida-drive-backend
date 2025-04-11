@@ -1,5 +1,6 @@
 const { google } = require('googleapis');
 const multer = require('multer');
+const fs = require('fs');
 
 // Cargar credenciales desde variable de entorno
 const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
@@ -15,7 +16,7 @@ const drive = google.drive('v3');
 const uploadFileToDrive = async (file) => {
     const auth = new google.auth.GoogleAuth({
         credentials: credentials,
-        scopes: ['https://www.googleapis.com/auth/drive.file'],
+        scopes: ['https://www.googleapis.com/auth/drive.file'], // Puedes probar con ['https://www.googleapis.com/auth/drive']
     });
 
     const authClient = await auth.getClient();
@@ -23,7 +24,7 @@ const uploadFileToDrive = async (file) => {
 
     const fileMetadata = {
         name: file.originalname,
-        parents: ['1-35sznqeDd-35dP8Okz-3Ng2vSnxKx-n'], // SOLO el ID de la carpeta
+        parents: ['1-35sznqeDd-35dP8Okz-3Ng2vSnxKx-n'], // Asegúrate de que este ID es correcto
     };
 
     const media = {
@@ -39,7 +40,7 @@ const uploadFileToDrive = async (file) => {
         });
         return res.data.id;
     } catch (error) {
-        console.error('Error al subir el archivo: ', error);
+        console.error('Error completo al subir el archivo: ', JSON.stringify(error, null, 2)); // Mostramos el error detallado
         throw error;
     }
 };
@@ -48,13 +49,16 @@ const uploadFileToDrive = async (file) => {
 module.exports = (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
+            console.error('Error al procesar el archivo: ', err);
             return res.status(400).send('Error al cargar el archivo');
         }
+
         try {
             const fileId = await uploadFileToDrive(req.file);
             res.status(200).send(`Archivo subido exitosamente con ID: ${fileId}`);
         } catch (error) {
-            res.status(500).send('Error al procesar el archivo');
+            console.error('Error al procesar el archivo: ', error.message);  // Esto muestra el error exacto
+            res.status(500).send('Error al procesar el archivo: ' + error.message);
         }
     });
 };
